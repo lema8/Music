@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { SoundBundle, Track } from '../types';
 import { exportBundleFile } from '../utils/bundleStorage';
+import { copyText } from '../utils/nativeBridge';
+import { coverArtForSeed, coverOnError } from '../utils/coverArt';
 
 interface BundlesViewProps {
   bundles: SoundBundle[];
@@ -28,11 +30,14 @@ export const BundlesView: React.FC<BundlesViewProps> = ({
     setShowQrModal(true);
   };
 
-  const handleCopyLink = () => {
-    setCopySuccess(true);
-    setTimeout(() => {
-      setCopySuccess(false);
-    }, 1800);
+  const handleCopyLink = async () => {
+    const ok = await copyText(`soundvault://p2p/bundle?id=${activeShareBundle?.id || ''}`);
+    if (ok) {
+      setCopySuccess(true);
+      setTimeout(() => {
+        setCopySuccess(false);
+      }, 1800);
+    }
   };
 
   const handleCreateBundleSubmit = () => {
@@ -47,7 +52,7 @@ export const BundlesView: React.FC<BundlesViewProps> = ({
       trackCount: Math.max(1, chosenTracks.length),
       totalSizeMB: totalSize,
       lossless: chosenTracks.some((t) => t.isLossless),
-      coverArt: chosenTracks[0]?.coverArt || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop',
+      coverArt: chosenTracks[0]?.coverArt || coverArtForSeed('bundle-' + newBundleTitle.trim()),
       tags: ['Local Offline Package', 'Zero Loss'],
       trackIds: selectedTrackIds,
       status: 'READY',
@@ -67,7 +72,7 @@ export const BundlesView: React.FC<BundlesViewProps> = ({
     trackCount: 24,
     totalSizeMB: 680,
     lossless: true,
-    coverArt: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=800&auto=format&fit=crop',
+    coverArt: coverArtForSeed('Late Night Synthwave Vault'),
     tags: ['Full Dynamic Masters', '3000px Covers & Cues', 'P2P Verified Hash'],
     trackIds: ['track-1', 'track-2'],
     status: 'SYNCED',
@@ -133,6 +138,7 @@ export const BundlesView: React.FC<BundlesViewProps> = ({
               <img
                 src={activeBundle.coverArt}
                 alt={activeBundle.title}
+                onError={coverOnError(activeBundle.id)}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0c0e16]/80 via-transparent to-transparent flex items-end p-1">
@@ -314,6 +320,7 @@ export const BundlesView: React.FC<BundlesViewProps> = ({
                   <img
                     src={bundle.coverArt}
                     alt={bundle.title}
+                    onError={coverOnError(bundle.id)}
                     className="w-full h-full object-cover"
                   />
                 </div>

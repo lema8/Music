@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { registerAndroidBackButton, minimizeAndroidApp } from './utils/nativeBridge';
 import { ActiveTab, Track, SoundBundle, AppSettings, EQPreset } from './types';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
@@ -192,6 +193,30 @@ export default function App() {
   const handlePurgeCache = () => {
     localStorage.removeItem('soundvault_cache_index');
   };
+
+  // Android hardware back button: close any open overlay → collapse the
+  // fullscreen player → send the app to the background (native shell only).
+  const uiStateRef = useRef({ overlay: false, tab: activeTab, prev: previousTab });
+  uiStateRef.current = {
+    overlay: isContextMenuOpen || isInstallModalOpen || showProfileModal,
+    tab: activeTab,
+    prev: previousTab,
+  };
+
+  useEffect(() => {
+    registerAndroidBackButton(() => {
+      const s = uiStateRef.current;
+      if (s.overlay) {
+        setIsContextMenuOpen(false);
+        setIsInstallModalOpen(false);
+        setShowProfileModal(false);
+      } else if (s.tab === 'player') {
+        setActiveTab(s.prev !== 'player' ? s.prev : 'vault');
+      } else {
+        minimizeAndroidApp();
+      }
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#11131b] text-[#e2e1ee] flex flex-col relative antialiased selection:bg-[#a078ff]/30 selection:text-[#d0bcff]">

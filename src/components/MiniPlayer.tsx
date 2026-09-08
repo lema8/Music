@@ -1,5 +1,6 @@
 import React from 'react';
 import { Track } from '../types';
+import { coverOnError } from '../utils/coverArt';
 
 interface MiniPlayerProps {
   currentTrack: Track | null;
@@ -46,6 +47,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
                 <img
                   src={currentTrack.coverArt}
                   alt={currentTrack.title}
+                  onError={coverOnError()}
                   className="w-full h-full object-cover"
                 />
               ) : null}

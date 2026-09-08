@@ -12,18 +12,26 @@ export function usePWAInstall() {
   const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
+    // Running inside the Capacitor native Android shell — this IS the app.
+    const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } })
+      .Capacitor;
+    const isNativeShell = !!cap?.isNativePlatform?.();
+
     // Detect standalone mode (already running as installed Android WebAPK / PWA)
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
       document.referrer.includes('android-app://');
-    setIsInstalled(isStandalone);
+    setIsInstalled(isNativeShell || isStandalone);
 
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isAndroidDevice = /android/.test(userAgent);
     const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
-    setIsAndroid(isAndroidDevice);
+    setIsAndroid(isNativeShell || isAndroidDevice);
     setIsIOS(isIOSDevice);
+
+    // In the native shell there is no browser "install prompt" flow.
+    if (isNativeShell) return;
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();

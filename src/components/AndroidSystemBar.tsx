@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { isNativeApp } from '../utils/nativeBridge';
 import { triggerHaptic } from '../utils/haptics';
 
 interface AndroidSystemBarProps {
@@ -9,6 +10,7 @@ interface AndroidSystemBarProps {
 export const AndroidSystemBar: React.FC<AndroidSystemBarProps> = ({ onOpenInstallModal }) => {
   const [currentTimeStr, setCurrentTimeStr] = useState('');
   const { isInstalled, isInstallable, install } = usePWAInstall();
+  const native = isNativeApp();
 
   useEffect(() => {
     const updateTime = () => {
@@ -35,6 +37,9 @@ export const AndroidSystemBar: React.FC<AndroidSystemBarProps> = ({ onOpenInstal
     }
   };
 
+  // Inside the native Android app the install CTA is meaningless — show badge.
+  const showBadge = native || isInstalled;
+
   return (
     <header className="sticky top-0 z-40 w-full bg-[#11131b]/95 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 pb-1 flex items-center justify-between text-xs text-[#cbc3d7] select-none">
       {/* Left: Android System Time */}
@@ -45,10 +50,12 @@ export const AndroidSystemBar: React.FC<AndroidSystemBarProps> = ({ onOpenInstal
 
       {/* Center: In-App Android Native Badge / Install CTA */}
       <div className="flex items-center gap-1">
-        {isInstalled ? (
+        {showBadge ? (
           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#282a32] text-[10px] font-mono text-[#4edea3] border border-[#4edea3]/20">
             <span className="material-symbols-outlined text-[13px]">android</span>
-            <span className="font-semibold uppercase tracking-wider">Android Standalone</span>
+            <span className="font-semibold uppercase tracking-wider">
+              {native ? 'Android App' : 'Android Standalone'}
+            </span>
           </div>
         ) : (
           <button

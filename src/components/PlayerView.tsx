@@ -3,6 +3,7 @@ import { Track, EQPreset, OutputRoute } from '../types';
 import { formatTime } from '../utils/vaultStorage';
 import { triggerHaptic } from '../utils/haptics';
 import { CoverArtPickerModal } from './CoverArtPickerModal';
+import { coverOnError } from '../utils/coverArt';
 
 interface PlayerViewProps {
   currentTrack: Track;
@@ -160,6 +161,7 @@ export const PlayerView: React.FC<PlayerViewProps> = ({
           <img
             src={currentTrack.coverArt}
             alt={currentTrack.title}
+            onError={coverOnError()}
             className="absolute inset-0 w-full h-full object-cover"
           />
 

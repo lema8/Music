@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Track } from '../types';
 import { triggerHaptic } from '../utils/haptics';
+import { exportFile } from '../utils/nativeBridge';
 import { CoverArtPickerModal } from './CoverArtPickerModal';
+import { coverOnError } from '../utils/coverArt';
 
 interface TrackContextMenuProps {
   track: Track | null;
@@ -51,17 +53,14 @@ export const TrackContextMenu: React.FC<TrackContextMenuProps> = ({
     onClose();
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     triggerHaptic('medium');
-    const blob = track.audioBlob || new Blob([`Audio: ${track.title}`], { type: 'audio/flac' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${track.title.toLowerCase().replace(/\s+/g, '_')}.${track.formatType.toLowerCase()}`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
     onClose();
+    const blob = track.audioBlob || new Blob([`Audio: ${track.title}`], { type: 'audio/flac' });
+    const filename = `${track.title.toLowerCase().replace(/\s+/g, '_')}.${track.formatType.toLowerCase()}`;
+    // Native app → Android share sheet / save-to-files.
+    // Web/PWA   → classic browser download.
+    await exportFile(blob, filename);
   };
 
   return (
@@ -81,6 +80,7 @@ export const TrackContextMenu: React.FC<TrackContextMenuProps> = ({
                 <img
                   src={track.coverArt}
                   alt={track.title}
+                  onError={coverOnError()}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -111,7 +111,7 @@ export const TrackContextMenu: React.FC<TrackContextMenuProps> = ({
                   <div className="w-14 h-14 rounded-xl overflow-hidden bg-black/40 shrink-0 border border-white/10">
                     <img
                       src={editCoverArt}
-                      alt="Cover"
+                      alt="Cover" onError={coverOnError()}
                       className="w-full h-full object-cover"
                     />
                   </div>

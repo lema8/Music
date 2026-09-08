@@ -1,4 +1,5 @@
 import { SoundBundle } from '../types';
+import { exportFile } from './nativeBridge';
 
 export const INITIAL_BUNDLES: SoundBundle[] = [];
 
@@ -23,7 +24,7 @@ export function saveBundles(bundles: SoundBundle[]): void {
   }
 }
 
-export function exportBundleFile(bundle: SoundBundle): void {
+export async function exportBundleFile(bundle: SoundBundle): Promise<void> {
   const payload = {
     bundleId: bundle.id,
     title: bundle.title,
@@ -34,11 +35,8 @@ export function exportBundleFile(bundle: SoundBundle): void {
     manifest: bundle,
   };
 
-  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));
-  const downloadAnchor = document.createElement('a');
-  downloadAnchor.setAttribute('href', dataStr);
-  downloadAnchor.setAttribute('download', `${bundle.title.toLowerCase().replace(/\s+/g, '_')}.soundvault`);
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  downloadAnchor.remove();
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const filename = `${bundle.title.toLowerCase().replace(/\s+/g, '_')}.soundvault`;
+  // Native app → Android share sheet / save-to-files. Web/PWA → browser download.
+  await exportFile(blob, filename);
 }
