@@ -1,0 +1,6 @@
+{
+  "name": "SoundVault",
+  "description": "Offline hi-res audio player, local library manager, metadata sanitizer, and sound bundle sharing application.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

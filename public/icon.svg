@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#191b24" />
+      <stop offset="100%" stop-color="#0c0e16" />
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d0bcff" />
+      <stop offset="100%" stop-color="#a078ff" />
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4cd7f6" />
+      <stop offset="100%" stop-color="#00a5c4" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer squircle background -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4" />
+
+  <!-- Outer Vinyl Groove Ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#282a32" stroke-width="24" />
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#33343e" stroke-width="8" opacity="0.6" />
+  
+  <!-- Inner Glow Center Disc -->
+  <circle cx="256" cy="256" r="120" fill="#1d1f28" stroke="url(#purpleGrad)" stroke-width="8" />
+
+  <!-- Vault Shield & Sound Wave Glyph -->
+  <!-- Sound Waveform Bars -->
+  <rect x="186" y="226" width="16" height="60" rx="8" fill="url(#cyanGrad)" />
+  <rect x="221" y="196" width="16" height="120" rx="8" fill="url(#purpleGrad)" />
+  <rect x="256" y="176" width="16" height="160" rx="8" fill="#ffffff" />
+  <rect x="291" y="206" width="16" height="100" rx="8" fill="url(#purpleGrad)" />
+  <rect x="326" y="236" width="16" height="40" rx="8" fill="url(#cyanGrad)" />
+
+  <!-- Small lock/vault badge indicator -->
+  <circle cx="370" cy="370" r="44" fill="#381e72" stroke="#d0bcff" stroke-width="6" />
+  <path d="M362 360 v-8 a8 8 0 0 1 16 0 v8 h4 a4 4 0 0 1 4 4 v16 a4 4 0 0 1 -4 4 h-24 a4 4 0 0 1 -4 -4 v-16 a4 4 0 0 1 4 -4 z M366 360 h8 v-8 a4 4 0 0 0 -8 0 z" fill="#d0bcff" />
+</svg>
