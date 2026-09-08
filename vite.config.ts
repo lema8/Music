@@ -46,6 +46,9 @@ export default defineConfig(() => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+          // Self-hosted variable fonts (e.g. the Material Symbols icon font)
+          // are a few MB and must be precached for full offline playback UI.
+          maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         },
         devOptions: {
           enabled: true,

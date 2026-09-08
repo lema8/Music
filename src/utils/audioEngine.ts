@@ -23,6 +23,9 @@ class SoundVaultAudioEngine {
   private volume: number = 0.75;
   private eqPreset: EQPreset = 'Studio Warmth';
 
+  // Object URL we created from a stored audioBlob — revoked when replaced.
+  private managedObjectUrl: string | null = null;
+
   private listeners: Set<() => void> = new Set();
   private animFrameId: number | null = null;
 
@@ -199,6 +202,24 @@ class SoundVaultAudioEngine {
     this.listeners.forEach((cb) => cb());
   }
 
+  /**
+   * Resolve a playable audio source for a track.
+   *
+   * Imported audio is persisted as an `audioBlob` inside IndexedDB. The
+   * `audioUrl` recorded at import time is a `blob:` object URL that dies as
+   * soon as the page/app is closed, so after a reload we always mint a
+   * fresh object URL from the stored Blob.
+   */
+  private resolveAudioSourceUrl(track: Track): string | null {
+    if (!track) return null;
+    if (track.audioUrl?.startsWith('http')) return track.audioUrl;
+    if (track.audioUrl?.startsWith('data:')) return track.audioUrl;
+    if (track.audioBlob) return URL.createObjectURL(track.audioBlob);
+    // Blob URL created earlier in this same session — still alive.
+    if (track.audioUrl?.startsWith('blob:')) return track.audioUrl;
+    return null;
+  }
+
   public setTrack(track: Track, autoPlay: boolean = true) {
     this.initAudioContext();
     this.currentTrack = track;
@@ -206,13 +227,30 @@ class SoundVaultAudioEngine {
     this.currentTime = 0;
 
     this.stopSynth();
+
+    // Release the object URL we created for the previous track (if any).
+    if (this.managedObjectUrl) {
+      try {
+        URL.revokeObjectURL(this.managedObjectUrl);
+      } catch {
+        // ignore
+      }
+      this.managedObjectUrl = null;
+    }
+
+    const sourceUrl = this.resolveAudioSourceUrl(track);
+    if (sourceUrl?.startsWith('blob:')) {
+      // Remember URLs we mint so they can be released when the track changes.
+      this.managedObjectUrl = sourceUrl;
+    }
+
     this.updateMediaSessionMetadata();
 
-    if (track.audioUrl && (track.audioUrl.startsWith('blob:') || track.audioUrl.startsWith('data:') || track.audioUrl.startsWith('http'))) {
+    if (sourceUrl) {
       // Real local audio file imported by user
       this.isSynthesizing = false;
       if (this.audioElement) {
-        this.audioElement.src = track.audioUrl;
+        this.audioElement.src = sourceUrl;
         this.audioElement.currentTime = 0;
         if (autoPlay) {
           this.audioElement.play().catch(() => {});

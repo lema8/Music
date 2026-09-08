@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Track, VaultFilter } from '../types';
 import { triggerHaptic } from '../utils/haptics';
+import { coverOnError } from '../utils/coverArt';
 
 interface VaultViewProps {
   tracks: Track[];
@@ -373,6 +374,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
                       <img
                         src={track.coverArt}
                         alt={track.title}
+                        onError={coverOnError()}
                         className="w-full h-full object-cover"
                       />
                     ) : (

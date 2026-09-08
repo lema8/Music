@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <!-- SoundVault dark theme palette (matches the web app's #11131b surface) -->
+    <color name="colorPrimary">#a078ff</color>
+    <color name="colorPrimaryDark">#11131b</color>
+    <color name="colorAccent">#d0bcff</color>
+    <color name="sv_background">#11131b</color>
+    <color name="sv_background_deep">#0c0e16</color>
+</resources>

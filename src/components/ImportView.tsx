@@ -3,6 +3,7 @@ import { Track } from '../types';
 import { sanitizeAudioFilename, formatTime, fileToDataUrl } from '../utils/vaultStorage';
 import { triggerHaptic } from '../utils/haptics';
 import { CoverArtPickerModal, COVER_PRESETS } from './CoverArtPickerModal';
+import { coverOnError } from '../utils/coverArt';
 
 interface ImportViewProps {
   onAddTrackToVault: (newTrack: Track) => void;
@@ -379,7 +380,7 @@ export const ImportView: React.FC<ImportViewProps> = ({ onAddTrackToVault, recen
               <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#0c0e16] border border-white/10 shadow-md shrink-0">
                 <img
                   src={stagedCoverArt}
-                  alt="Song cover"
+                  alt="Song cover" onError={coverOnError()}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -559,6 +560,7 @@ export const ImportView: React.FC<ImportViewProps> = ({ onAddTrackToVault, recen
                       <img
                         src={track.coverArt}
                         alt={track.title}
+                        onError={coverOnError()}
                         className="w-full h-full object-cover"
                       />
                     ) : (

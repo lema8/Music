@@ -1,45 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { fileToDataUrl } from '../utils/vaultStorage';
 import { triggerHaptic } from '../utils/haptics';
+import { COVER_PRESETS, coverOnError } from '../utils/coverArt';
 
-export interface CoverPreset {
-  id: string;
-  name: string;
-  url: string;
-}
-
-export const COVER_PRESETS: CoverPreset[] = [
-  {
-    id: 'preset-cyber',
-    name: 'Cyber Synth',
-    url: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    id: 'preset-vinyl',
-    name: 'Vintage Vinyl',
-    url: 'https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    id: 'preset-cosmic',
-    name: 'Deep Nebula',
-    url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    id: 'preset-acoustic',
-    name: 'Acoustic Warmth',
-    url: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    id: 'preset-ambient',
-    name: 'Solar Drift',
-    url: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    id: 'preset-tape',
-    name: 'Analog Master',
-    url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop',
-  },
-];
+// Re-exported so callers can keep importing COVER_PRESETS from this module.
+export { COVER_PRESETS } from '../utils/coverArt';
 
 interface CoverArtPickerModalProps {
   isOpen: boolean;
@@ -134,6 +99,7 @@ export const CoverArtPickerModal: React.FC<CoverArtPickerModalProps> = ({
               <img
                 src={selectedUrl}
                 alt="Cover Preview"
+                onError={coverOnError('preview')}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -225,6 +191,7 @@ export const CoverArtPickerModal: React.FC<CoverArtPickerModalProps> = ({
                   <img
                     src={preset.url}
                     alt={preset.name}
+                    onError={coverOnError(preset.id)}
                     className="w-full h-full object-cover"
                   />
                 </div>
